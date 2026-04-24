@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Cyber Security Lab</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #0f172a;
+    color: white;
+    text-align: center;
+}
+
+.box {
+    background: #1e293b;
+    width: 300px;
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+input {
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+button {
+    width: 95%;
+    padding: 10px;
+    background: #22c55e;
+    border: none;
+    color: white;
+}
+
+#logs {
+    margin-top: 10px;
+    font-size: 14px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+<h2>🔐 Login</h2>
+
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
+
+<button onclick="login()">Login</button>
+
+<p id="result"></p>
+</div>
+
+<div class="box">
+<h2>📊 Dashboard</h2>
+
+<button onclick="loadStats()">Refresh</button>
+
+<p id="attempts"></p>
+<div id="logs"></div>
+</div>
+
+<!-- 🧨 XSS Test -->
+<div class="box">
+<h2>🧨 XSS Test (Educational)</h2>
+
+<input id="xssInput" placeholder="Type something...">
+<button onclick="testXSS()">Test</button>
+
+<p id="xssResult"></p>
+</div>
+
+<script>
+async function login() {
+    let email = document.getElementById("email").value;
+    let password = document.getElementById("password").value;
+
+    let res = await fetch("/login", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({email, password})
+    });
+
+    let data = await res.json();
+    document.getElementById("result").innerText = data.message;
+}
+
+async function loadStats() {
+    let res = await fetch("/stats");
+    let data = await res.json();
+
+    document.getElementById("attempts").innerText =
+        "Total Attempts: " + data.attempts;
+
+    let logsDiv = document.getElementById("logs");
+    logsDiv.innerHTML = "";
+
+    data.logs.forEach(log => {
+        logsDiv.innerHTML += "<p>" + log + "</p>";
+    });
+}
+
+// 🧨 XSS (مقصودة للتعليم)
+function testXSS() {
+    let input = document.getElementById("xssInput").value;
+
+    // هذا السطر فيه ثغرة
+    document.getElementById("xssResult").innerHTML = input;
+}
+</script>
+
+</body>
+</html>
